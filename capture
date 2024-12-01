@@ -2,19 +2,19 @@
 #
 # capture - POSIX compliant stdout/stderr/exit code capture
 
-DLM="$(printf '\032')"
+DLM=$(printf '\032')
 LF='
 '
 
 capture() {
-    stdout="$( (printf "${DLM}%s${DLM}" "$(trap 'printf "${DLM}%d" "$?"' EXIT; "$@")" 1>&2) 2>&1 )"
-    exitcode="${stdout%"${DLM}"}"
-    exitcode="${exitcode##*"${DLM}"}"
-    stderr="${stdout%%"${DLM}"*}"
-    stderr="${stderr%"${LF}"}"
-    stdout="${stdout#*"${DLM}"}"
-    stdout="${stdout%"${DLM}"*"${DLM}"}"
-    stdout="${stdout%"${LF}"}"
+    stdout=$( (printf "${DLM}%s${DLM}" "$(trap 'printf "${DLM}%d" "$?"' EXIT; "$@")" 1>&2) 2>&1 )
+    exitcode=${stdout%"${DLM}"}
+    exitcode=${exitcode##*"${DLM}"}
+    stderr=${stdout%%"${DLM}"*}
+    stderr=${stderr%"${LF}"}
+    stdout=${stdout#*"${DLM}"}
+    stdout=${stdout%"${DLM}"*"${DLM}"}
+    stdout=${stdout%"${LF}"}
 
     return "$exitcode"
 }

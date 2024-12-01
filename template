@@ -2,11 +2,11 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo "template 1.0.3"; }
+version() { echo 'template 1.0.4'; }
 
 # region Help / Usage
 
-header() { echo >&2 "template is a POSIX compliant shell script template."; }
+header() { echo >&2 'template is a POSIX compliant shell script template.'; }
 
 desc() {
     colors NORMAL BOLD RED GREEN YELLOW BLUE MAGENTA CYAN
@@ -61,19 +61,19 @@ invalid() {
 
     LF='
 '
-    error="${2#getopt: }"
-    error="${error%%"${LF}"*}"
-    case "$error" in
-        *' -- '*) option="${error#* -- }"
-                  [ "$option" = '-' ] && option="${1#-}"
-                  option="${option#-}"
-                  error="${error% -- *}"
+    error=${2#getopt: }
+    error=${error%%"${LF}"*}
+    case $error in
+        *' -- '*) option=${error#* -- }
+                  [ "$option" = - ] && option=${1#-}
+                  option=${option#-}
+                  error=${error% -- *}
                   error="$error -- ${YELLOW}$option${NORMAL}" ;;
-        *'`'*\'*) option="${error#*\`}";
-                  option="${option%\'*}";
+        *'`'*\'*) option=${error#*\`};
+                  option=${option%\'*};
                   error="${error%%\`*}'${YELLOW}$option${NORMAL}'${error##*\'}" ;;
-        *\'*\'*)  option="${error#*\'}";
-                  option="${option%\'*}";
+        *\'*\'*)  option=${error#*\'};
+                  option=${option%\'*};
                   error="${error%%\'*}'${YELLOW}$option${NORMAL}'${error##*\'}" ;;
     esac
 
@@ -83,19 +83,19 @@ invalid() {
 colors() {
     for color in "$@"; do
         case $color in
-            NORMAL)    NORMAL=${NORMAL:-"$(      tput sgr0    2> /dev/null || printf '\033[0m')"}  ;;
-            BOLD)      BOLD=${BOLD:-"$(          tput bold    2> /dev/null || printf '\033[1m')"}  ;;
-            DIM)       DIM=${DIM:-"$(            tput dim     2> /dev/null || printf '\033[2m')"}  ;;
-            ITALIC)    ITALIC=${ITALIC:-"$(      tput sitm    2> /dev/null || printf '\033[3m')"}  ;;
-            UNDERLINE) UNDERLINE=${UNDERLINE:-"$(tput smul    2> /dev/null || printf '\033[4m')"}  ;;
-            BLACK)     BLACK=${BLACK:-"$(        tput setaf 0 2> /dev/null || printf '\033[30m')"} ;;
-            RED)       RED=${RED:-"$(            tput setaf 1 2> /dev/null || printf '\033[31m')"} ;;
-            GREEN)     GREEN=${GREEN:-"$(        tput setaf 2 2> /dev/null || printf '\033[32m')"} ;;
-            YELLOW)    YELLOW=${YELLOW:-"$(      tput setaf 3 2> /dev/null || printf '\033[33m')"} ;;
-            BLUE)      BLUE=${BLUE:-"$(          tput setaf 4 2> /dev/null || printf '\033[34m')"} ;;
-            MAGENTA)   MAGENTA=${MAGENTA:-"$(    tput setaf 5 2> /dev/null || printf '\033[35m')"} ;;
-            CYAN)      CYAN=${CYAN:-"$(          tput setaf 6 2> /dev/null || printf '\033[36m')"} ;;
-            WHITE)     WHITE=${WHITE:-"$(        tput setaf 7 2> /dev/null || printf '\033[37m')"} ;;
+            NORMAL)    NORMAL=${NORMAL:-$(      tput sgr0    2> /dev/null || printf '\033[0m')}  ;;
+            BOLD)      BOLD=${BOLD:-$(          tput bold    2> /dev/null || printf '\033[1m')}  ;;
+            DIM)       DIM=${DIM:-$(            tput dim     2> /dev/null || printf '\033[2m')}  ;;
+            ITALIC)    ITALIC=${ITALIC:-$(      tput sitm    2> /dev/null || printf '\033[3m')}  ;;
+            UNDERLINE) UNDERLINE=${UNDERLINE:-$(tput smul    2> /dev/null || printf '\033[4m')}  ;;
+            BLACK)     BLACK=${BLACK:-$(        tput setaf 0 2> /dev/null || printf '\033[30m')} ;;
+            RED)       RED=${RED:-$(            tput setaf 1 2> /dev/null || printf '\033[31m')} ;;
+            GREEN)     GREEN=${GREEN:-$(        tput setaf 2 2> /dev/null || printf '\033[32m')} ;;
+            YELLOW)    YELLOW=${YELLOW:-$(      tput setaf 3 2> /dev/null || printf '\033[33m')} ;;
+            BLUE)      BLUE=${BLUE:-$(          tput setaf 4 2> /dev/null || printf '\033[34m')} ;;
+            MAGENTA)   MAGENTA=${MAGENTA:-$(    tput setaf 5 2> /dev/null || printf '\033[35m')} ;;
+            CYAN)      CYAN=${CYAN:-$(          tput setaf 6 2> /dev/null || printf '\033[36m')} ;;
+            WHITE)     WHITE=${WHITE:-$(        tput setaf 7 2> /dev/null || printf '\033[37m')} ;;
         esac
     done
 }
@@ -104,8 +104,8 @@ colors() {
 
 parse() {
     case $2 in
-        -*|'') invalid "$1" "option requires an argument -- -"; usage; help; return 2 ;;
-        *)     printf  "%s" "$2" ;;
+        -*|'') invalid "$1" 'option requires an argument -- -'; usage; help; return 2 ;;
+        *)     printf  '%s' "$2" ;;
     esac
 }
 
@@ -119,18 +119,18 @@ string=
 while [ $# -gt 0 ] && [ "$1" != -- ]; do
     case $1 in
         -b|--boolean)    boolean=1; shift ;;
-        -s|--string)     string="$(parse "$1" "$2")" || exit $?; [ $# -gt 1 ] && shift; shift ;;
-        -s=*|--string=*) string="$(parse "${1%%=*}" "${1#*=}")" || exit $?;             shift ;;
+        -s|--string)     string=$(parse "$1" "$2") || exit $?; [ $# -gt 1 ] && shift; shift ;;
+        -s=*|--string=*) string=$(parse "${1%%=*}" "${1#*=}") || exit $?;             shift ;;
         -\?|-h|--help)   header; usage; desc; options; help; man; exit 0 ;;
         -v|--version)    version;                                 exit 0 ;;
 
-        -i|--input)     value="$(parse "$1" "$2")" || exit $?; [ $# -gt 1 ] && shift
+        -i|--input)     value=$(parse "$1" "$2") || exit $?; [ $# -gt 1 ] && shift
                         set -- "$@" -- --input "$value"; shift ;;
-        -i=*|--input=*) value="$(parse "${1%%=*}" "${1#*=}")" || exit $?
+        -i=*|--input=*) value=$(parse "${1%%=*}" "${1#*=}") || exit $?
                         set -- "$@" -- --input "$value"; shift ;;
         -)              set -- "$@" -- -;                shift ;;
         -*)             # shellcheck disable=SC2086
-                        opt=$(getopt "bhi:s:v" "$1" 2>&1) && shift &&
+                        opt=$(getopt 'bhi:s:v' "$1" 2>&1) && shift &&
                         set -- ${opt% --} "$@"            && continue
                         invalid "$1" "$opt"; usage; help;    exit 2 ;;
         *)              set -- "$@" -- "$1"; shift ;;
