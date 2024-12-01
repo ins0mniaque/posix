@@ -1,0 +1,132 @@
+#!/bin/sh
+#
+# template - POSIX compliant shell script template
+
+version() { echo "template 1.0.0"; }
+
+# region Help / Usage
+
+header() { echo >&2 "template is a POSIX compliant shell script template."; }
+
+help() {
+    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
+    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
+
+    echo >&2 "For listing the command options, use '${0##*/} ${BOLD}--help${NORMAL}'."
+}
+
+man() {
+    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
+    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
+
+    echo >&2 "
+For more advanced usage see the template(1) manpage ${ITALIC}('man template')${NORMAL} and/or
+https://github.com/ins0mniaque/posix/."
+}
+
+usage() {
+    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
+    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
+    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
+    UNDERLINE=$(tput smul 2> /dev/null || printf '\033[4m')
+
+    echo >&2 "
+${BOLD}${UNDERLINE}Usage${NORMAL}: ${BOLD}template${NORMAL} [${ITALIC}options${NORMAL}] [${ITALIC}files${NORMAL}]
+                [-h|--help|-v|--version]
+"
+}
+
+options() {
+    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
+    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
+    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
+    UNDERLINE=$(tput smul 2> /dev/null || printf '\033[4m')
+
+    echo >&2 "\
+${BOLD}${UNDERLINE}Options${NORMAL}:
+  ${BOLD}-b, --boolean               ${NORMAL}Set boolean option
+  ${BOLD}-s STR, --string STR,
+  ${BOLD}-s=STR, --string=STR        ${NORMAL}Set string option to STR
+  ${BOLD}-                           ${NORMAL}Read from STDIN
+  ${BOLD}-i INPUT, --input INPUT,
+  ${BOLD}-i=INPUT, --input=INPUT     ${NORMAL}Read from string value of INPUT
+  ${BOLD}-h, --help                  ${NORMAL}Display help and exit
+  ${BOLD}-v, --version               ${NORMAL}Display the version number and exit
+"
+}
+
+invalid() {
+    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
+    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
+    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
+    UNDERLINE=$(tput smul 2> /dev/null || printf '\033[4m')
+    RED=$(tput setaf 1 2> /dev/null || printf '\033[31m')
+    YELLOW=$(tput setaf 3 2> /dev/null || printf '\033[33m')
+
+    LF='
+'
+    error="${2#getopt: }"
+    error="${error%%"${LF}"*}"
+    case "$error" in
+        *' -- '*) option="${error#* -- }"
+                  [ "$option" = '-' ] && option="${1#-}"
+                  option="${option#-}"
+                  error="${error% -- *}"
+                  error="$error -- ${YELLOW}$option${NORMAL}" ;;
+        *'`'*\'*) option="${error#*\`}";
+                  option="${option%\'*}";
+                  error="${error%%\`*}'${YELLOW}$option${NORMAL}'${error##*\'}" ;;
+        *\'*\'*)  option="${error#*\'}";
+                  option="${option%\'*}";
+                  error="${error%%\'*}'${YELLOW}$option${NORMAL}'${error##*\'}" ;;
+    esac
+
+    echo >&2 "${BOLD}${RED}error:${NORMAL} $error"
+}
+
+# endregion Help / Usage
+
+parse() {
+    case $2 in
+        -*|'') invalid "$1" "option requires an argument -- -"; usage; help; return 2 ;;
+        *)     printf  "%s" "$2" ;;
+    esac
+}
+
+if [ $# = 0 ]; then
+    set -- --help
+fi
+
+boolean=0
+string=
+
+while [ $# -gt 0 ] && [ "$1" != -- ]; do
+    case $1 in
+        -b|--boolean)    boolean=1;                                         shift ;;
+        -s|--string)     string="$(parse "$1" "$2")"            || exit $?; shift; [ $# -gt 0 ] && shift ;;
+        -s=*|--string=*) string="$(parse "${1%%=*}" "${1#*=}")" || exit $?; shift ;;
+        -\?|-h|--help)   header; usage; options; help; man; exit 0 ;;
+        -v|--version)    version;                           exit 0 ;;
+
+        -i|--input)     set -- "$@" -- --input "$(parse "$1" "$2")"            || exit $?; shift; [ $# -gt 0 ] && shift ;;
+        -i=*|--input=*) set -- "$@" -- --input "$(parse "${1%%=*}" "${1#*=}")" || exit $?; shift ;;
+        -)              set -- "$@" -- -;    shift ;;
+        -*)             # shellcheck disable=SC2086
+                        opt=$(getopt "bhi:s:v" "$1" 2>&1) && shift &&
+                        set -- ${opt% --} "$@"            && continue
+                        invalid "$1" "$opt"; usage; help;    exit 2 ;;
+        *)              set -- "$@" -- "$1"; shift ;;
+    esac
+done
+
+echo "Boolean option: $boolean"
+echo "String option: $string"
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        --)                            shift ;;
+        --input) echo "Input: $2";     shift; shift ;;
+        -)       echo "Input: $(cat)"; shift ;;
+        *)       echo "File: $1";      shift ;;
+    esac
+done
