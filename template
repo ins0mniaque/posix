@@ -2,11 +2,27 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo "template 1.0.0"; }
+version() { echo "template 1.0.1"; }
 
 # region Help / Usage
 
 header() { echo >&2 "template is a POSIX compliant shell script template."; }
+
+desc() {
+    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
+    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
+    RED=$(tput setaf 1 2> /dev/null || printf '\033[31m')
+    GREEN=$(tput setaf 2 2> /dev/null || printf '\033[32m')
+    YELLOW=$(tput setaf 3 2> /dev/null || printf '\033[33m')
+    BLUE=$(tput setaf 4 2> /dev/null || printf '\033[34m')
+    MAGENTA=$(tput setaf 5 2> /dev/null || printf '\033[35m')
+    CYAN=$(tput setaf 6 2> /dev/null || printf '\033[36m')
+
+    echo >&2 "\
+template demonstrates how to parse options, process arguments and output ${BOLD}${RED}c${GREEN}o${YELLOW}l${BLUE}o${MAGENTA}r${CYAN}s${NORMAL}
+while maintaining POSIX compliance.
+"
+}
 
 help() {
     NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
@@ -105,8 +121,8 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
         -b|--boolean)    boolean=1;                                         shift ;;
         -s|--string)     string="$(parse "$1" "$2")"            || exit $?; shift; [ $# -gt 0 ] && shift ;;
         -s=*|--string=*) string="$(parse "${1%%=*}" "${1#*=}")" || exit $?; shift ;;
-        -\?|-h|--help)   header; usage; options; help; man; exit 0 ;;
-        -v|--version)    version;                           exit 0 ;;
+        -\?|-h|--help)   header; usage; desc; options; help; man; exit 0 ;;
+        -v|--version)    version;                                 exit 0 ;;
 
         -i|--input)     set -- "$@" -- --input "$(parse "$1" "$2")"            || exit $?; shift; [ $# -gt 0 ] && shift ;;
         -i=*|--input=*) set -- "$@" -- --input "$(parse "${1%%=*}" "${1#*=}")" || exit $?; shift ;;
