@@ -2,21 +2,14 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo "template 1.0.1"; }
+version() { echo "template 1.0.2"; }
 
 # region Help / Usage
 
 header() { echo >&2 "template is a POSIX compliant shell script template."; }
 
 desc() {
-    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
-    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
-    RED=$(tput setaf 1 2> /dev/null || printf '\033[31m')
-    GREEN=$(tput setaf 2 2> /dev/null || printf '\033[32m')
-    YELLOW=$(tput setaf 3 2> /dev/null || printf '\033[33m')
-    BLUE=$(tput setaf 4 2> /dev/null || printf '\033[34m')
-    MAGENTA=$(tput setaf 5 2> /dev/null || printf '\033[35m')
-    CYAN=$(tput setaf 6 2> /dev/null || printf '\033[36m')
+    colors NORMAL BOLD RED GREEN YELLOW BLUE MAGENTA CYAN
 
     echo >&2 "\
 template demonstrates how to parse options, process arguments and output ${BOLD}${RED}c${GREEN}o${YELLOW}l${BLUE}o${MAGENTA}r${CYAN}s${NORMAL}
@@ -25,15 +18,13 @@ while maintaining POSIX compliance.
 }
 
 help() {
-    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
-    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
+    colors NORMAL BOLD
 
     echo >&2 "For listing the command options, use '${0##*/} ${BOLD}--help${NORMAL}'."
 }
 
 man() {
-    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
-    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
+    colors NORMAL ITALIC
 
     echo >&2 "
 For more advanced usage see the template(1) manpage ${ITALIC}('man template')${NORMAL} and/or
@@ -41,10 +32,7 @@ https://github.com/ins0mniaque/posix/."
 }
 
 usage() {
-    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
-    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
-    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
-    UNDERLINE=$(tput smul 2> /dev/null || printf '\033[4m')
+    colors NORMAL BOLD ITALIC UNDERLINE
 
     echo >&2 "
 ${BOLD}${UNDERLINE}Usage${NORMAL}: ${BOLD}template${NORMAL} [${ITALIC}options${NORMAL}] [${ITALIC}files${NORMAL}]
@@ -53,10 +41,7 @@ ${BOLD}${UNDERLINE}Usage${NORMAL}: ${BOLD}template${NORMAL} [${ITALIC}options${N
 }
 
 options() {
-    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
-    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
-    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
-    UNDERLINE=$(tput smul 2> /dev/null || printf '\033[4m')
+    colors NORMAL BOLD ITALIC UNDERLINE
 
     echo >&2 "\
 ${BOLD}${UNDERLINE}Options${NORMAL}:
@@ -72,12 +57,7 @@ ${BOLD}${UNDERLINE}Options${NORMAL}:
 }
 
 invalid() {
-    NORMAL=$(tput sgr0 2> /dev/null || printf '\033[0m')
-    BOLD=$(tput bold 2> /dev/null || printf '\033[1m')
-    ITALIC=$(tput sitm 2> /dev/null || printf '\033[3m')
-    UNDERLINE=$(tput smul 2> /dev/null || printf '\033[4m')
-    RED=$(tput setaf 1 2> /dev/null || printf '\033[31m')
-    YELLOW=$(tput setaf 3 2> /dev/null || printf '\033[33m')
+    colors NORMAL BOLD ITALIC UNDERLINE RED YELLOW
 
     LF='
 '
@@ -98,6 +78,26 @@ invalid() {
     esac
 
     echo >&2 "${BOLD}${RED}error:${NORMAL} $error"
+}
+
+colors() {
+    for color in "$@"; do
+        case $color in
+            NORMAL)    NORMAL=${NORMAL:-"$(      tput sgr0    2> /dev/null || printf '\033[0m')"}  ;;
+            BOLD)      BOLD=${BOLD:-"$(          tput bold    2> /dev/null || printf '\033[1m')"}  ;;
+            DIM)       DIM=${DIM:-"$(            tput dim     2> /dev/null || printf '\033[2m')"}  ;;
+            ITALIC)    ITALIC=${ITALIC:-"$(      tput sitm    2> /dev/null || printf '\033[3m')"}  ;;
+            UNDERLINE) UNDERLINE=${UNDERLINE:-"$(tput smul    2> /dev/null || printf '\033[4m')"}  ;;
+            BLACK)     BLACK=${BLACK:-"$(        tput setaf 0 2> /dev/null || printf '\033[30m')"} ;;
+            RED)       RED=${RED:-"$(            tput setaf 1 2> /dev/null || printf '\033[31m')"} ;;
+            GREEN)     GREEN=${GREEN:-"$(        tput setaf 2 2> /dev/null || printf '\033[32m')"} ;;
+            YELLOW)    YELLOW=${YELLOW:-"$(      tput setaf 3 2> /dev/null || printf '\033[33m')"} ;;
+            BLUE)      BLUE=${BLUE:-"$(          tput setaf 4 2> /dev/null || printf '\033[34m')"} ;;
+            MAGENTA)   MAGENTA=${MAGENTA:-"$(    tput setaf 5 2> /dev/null || printf '\033[35m')"} ;;
+            CYAN)      CYAN=${CYAN:-"$(          tput setaf 6 2> /dev/null || printf '\033[36m')"} ;;
+            WHITE)     WHITE=${WHITE:-"$(        tput setaf 7 2> /dev/null || printf '\033[37m')"} ;;
+        esac
+    done
 }
 
 # endregion Help / Usage
