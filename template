@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.0.6'; }
+version() { echo 'template 1.0.7'; }
 
 # region Help / Usage
 
@@ -133,11 +133,18 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
         -i=*|--input=*) value=$(parse "${1%%=*}" "${1#*=}") || exit $?
                         set -- "$@" -- --input "$value"; shift ;;
         -)              set -- "$@" -- -;                shift ;;
-        -*)             # shellcheck disable=SC2086
-                        opt=$(getopt 'bhi:s:v' "$1" 2>&1) && shift &&
-                        set -- ${opt% --} "$@"            && continue
-                        invalid "$1" "$opt"; usage; help;    exit 2 ;;
-        *)              set -- "$@" -- "$1"; shift ;;
+
+        -*) if opt=$(getopt 'bhi:s:v' "$1" 2>&1) && shift; then
+                [ -n "$ZSH_VERSION" ] && setopt shwordsplit > /dev/null 2>&1
+                # shellcheck disable=SC2086
+                set -- ${opt% --} "$@"
+                [ -n "$ZSH_VERSION" ] && unsetopt shwordsplit > /dev/null 2>&1
+
+                continue
+            else
+                invalid "$1" "$opt"; usage; help; exit 2
+            fi ;;
+        *)  set -- "$@" -- "$1"; shift ;;
     esac
 done
 
