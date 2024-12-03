@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.0.5'; }
+version() { echo 'template 1.0.6'; }
 
 # region Help / Usage
 
@@ -108,6 +108,10 @@ parse() {
         *)     printf  '%s' "$2" ;;
     esac
 }
+
+if [ ! -t 0 ]; then
+    set -- "$@" -
+fi
 
 if [ $# = 0 ]; then
     set -- --help
