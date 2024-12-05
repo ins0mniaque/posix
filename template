@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.0.9'; }
+version() { echo 'template 1.0.10'; }
 
 # region Help / Usage
 
@@ -132,7 +132,9 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
         -*) if opts=$(getopt 'bhi:s:v' "$1" 2>&1) && shift; then
                 # shellcheck disable=SC2086
                 if [ -n "$ZSH_VERSION" ]; then
-                    set -- ${=opts% --} "$@"
+                    setopt shwordsplit > /dev/null 2>&1
+                    set -- ${opts% --} "$@"
+                    unsetopt shwordsplit > /dev/null 2>&1
                 else
                     set -- ${opts% --} "$@"
                 fi
