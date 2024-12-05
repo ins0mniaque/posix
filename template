@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.0.8'; }
+version() { echo 'template 1.0.9'; }
 
 # region Help / Usage
 
@@ -129,15 +129,17 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
                         set -- "$@" -- --input "$value"; shift ;;
         -)              set -- "$@" -- -;                shift ;;
 
-        -*) if opt=$(getopt 'bhi:s:v' "$1" 2>&1) && shift; then
-                [ -n "$ZSH_VERSION" ] && setopt shwordsplit > /dev/null 2>&1
+        -*) if opts=$(getopt 'bhi:s:v' "$1" 2>&1) && shift; then
                 # shellcheck disable=SC2086
-                set -- ${opt% --} "$@"
-                [ -n "$ZSH_VERSION" ] && unsetopt shwordsplit > /dev/null 2>&1
+                if [ -n "$ZSH_VERSION" ]; then
+                    set -- ${=opts% --} "$@"
+                else
+                    set -- ${opts% --} "$@"
+                fi
 
                 continue
             else
-                invalid "$1" "$opt"; usage; help; exit 2
+                invalid "$1" "$opts"; usage; help; exit 2
             fi ;;
         *)  set -- "$@" -- "$1"; shift ;;
     esac
@@ -148,7 +150,7 @@ echo "String option: $string"
 
 while [ $# -gt 0 ]; do
     case $1 in
-        --)                            shift ;;
+        --)      shift ;;
         --input) echo "Input: $2";     shift; shift ;;
         -)       echo "Input: $(cat)"; shift ;;
         *)       echo "File: $1";      shift ;;
