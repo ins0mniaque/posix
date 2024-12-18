@@ -36,7 +36,7 @@ usage() {
 
     echo >&2 "
 ${BOLD}${UNDERLINE}Usage${NORMAL}: ${BOLD}template${NORMAL} [${ITALIC}options${NORMAL}] [${ITALIC}files${NORMAL}]
-                [-h|--help|-v|--version]
+                [-h|--help|--version]
 "
 }
 
