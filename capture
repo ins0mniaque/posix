@@ -32,7 +32,7 @@ capture() {
 
 capture "$@"
 
-[ -n "$stderr" ] && printf '%s\n' "$stderr"
-[ -n "$stdout" ] && printf '%s\n' "$stdout"
+[ -n "$stderr" ] && printf >&2 '%s\n' "$stderr"
+[ -n "$stdout" ] && printf     '%s\n' "$stdout"
 
 exit "$exitcode"
