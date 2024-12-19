@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.0.12'; }
+version() { echo 'template 1.0.13'; }
 
 # region Help / Usage
 
@@ -82,6 +82,9 @@ invalid() {
 
 [ -t 1 ] && colorless= || colorless=1
 color=auto
+
+NORMAL=; BOLD=; DIM=; ITALIC=; UNDERLINE=;
+BLACK=; RED=; GREEN=; YELLOW=; BLUE=; MAGENTA=; CYAN=; WHITE=
 
 colors() {
     case $color in
