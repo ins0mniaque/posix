@@ -83,7 +83,7 @@ invalid() {
 [ -t 1 ] && colorless= || colorless=1
 color=auto
 
-NORMAL=; BOLD=; DIM=; ITALIC=; UNDERLINE=;
+NORMAL=; BOLD=; DIM=; ITALIC=; UNDERLINE=
 BLACK=; RED=; GREEN=; YELLOW=; BLUE=; MAGENTA=; CYAN=; WHITE=
 
 colors() {
