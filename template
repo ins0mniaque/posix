@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.1.0'; }
+version() { echo 'template 1.1.1'; }
 
 # region Help / Usage
 
@@ -57,27 +57,9 @@ ${BOLD}${UNDERLINE}Options${NORMAL}:
 }
 
 invalid() {
-    colors NORMAL BOLD ITALIC UNDERLINE RED YELLOW
+    colors NORMAL BOLD RED YELLOW
 
-    LF='
-'
-    error=${2#getopt: }
-    error=${error%%"${LF}"*}
-    case $error in
-        *' -- '*) option=${error#* -- }
-                  [ "$option" = - ] && option=${1#-}
-                  option=${option#-}
-                  error=${error% -- *}
-                  error="$error -- ${YELLOW}$option${NORMAL}" ;;
-        *'`'*\'*) option=${error#*\`};
-                  option=${option%\'*};
-                  error="${error%%\`*}'${YELLOW}$option${NORMAL}'${error##*\'}" ;;
-        *\'*\'*)  option=${error#*\'};
-                  option=${option%\'*};
-                  error="${error%%\'*}'${YELLOW}$option${NORMAL}'${error##*\'}" ;;
-    esac
-
-    echo >&2 "${BOLD}${RED}error:${NORMAL} $error"
+    echo >&2 "${BOLD}${RED}error:${NORMAL} $2 -- ${YELLOW}$1${NORMAL}"
 }
 
 [ -t 1 ] && colorless= || colorless=1
@@ -116,7 +98,7 @@ validcolor() {
     case $2 in
         auto|always|never) ;;
         *) colors NORMAL GREEN
-           invalid "$1" "color must be either ${GREEN}auto${NORMAL}, ${GREEN}never${NORMAL} or ${GREEN}always${NORMAL} -- -"; usage; help; exit 2 ;;
+           invalid "$1" "color must be either ${GREEN}auto${NORMAL}, ${GREEN}never${NORMAL} or ${GREEN}always${NORMAL}"; usage; help; exit 2 ;;
     esac
 }
 
@@ -124,7 +106,7 @@ validcolor() {
 
 parse() {
     case $2 in
-        -*|'') invalid "$1" 'option requires an argument -- -'; usage; help; return 2 ;;
+        -*|'') invalid "$1" 'option requires an argument'; usage; help; return 2 ;;
         *)     [ -n "$3" ] && ! "$3" "$1 '$2'" "$2" && return $?; printf '%s' "$2" ;;
     esac
 }
@@ -156,7 +138,7 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
         -[!-]?*) opts=${1#??}; opt=${1%"$opts"}; shift
                  case $opt in -[!is]) opts="-$opts" ;; esac
                  set -- "$opt" "$opts" "$@" ;;
-        -*)      invalid "$1" "invalid option -- -"; usage; help; exit 2 ;;
+        -*)      invalid "$1" 'invalid option'; usage; help; exit 2 ;;
         *)       set -- "$@" -- "$1"; shift ;;
     esac
 done
