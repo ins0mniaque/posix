@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.1.2'; }
+version() { echo 'template 1.1.3'; }
 
 # region Help / Usage
 
@@ -102,8 +102,6 @@ validcolor() {
     esac
 }
 
-# endregion Help / Usage
-
 parse() {
     case $2 in
         -*|'') invalid "$1" 'option requires an argument'; usage; help; return 2 ;;
@@ -111,8 +109,13 @@ parse() {
     esac
 }
 
+# endregion Help / Usage
+
 [ ! -t 0 ] && set -- "$@" -
-[ $# = 0 ] && set -- --usage
+
+if [ $# = 0 ]; then
+    header; usage; desc; help; man; exit 0
+fi
 
 boolean=0
 string=
@@ -125,7 +128,6 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
         -b|--boolean)    boolean=1; shift ;;
         -s|--string)     string=$(parse "$1" "$2") || exit $?; [ $# -gt 1 ] && shift; shift ;;
         -s=*|--string=*) string=$(parse "${1%%=*}" "${1#*=}") || exit $?;             shift ;;
-        --usage)         header; usage; desc; help; man;    exit 0 ;;
         -\?|-h|--help)   header; usage; desc; options; man; exit 0 ;;
         --version)       version;                           exit 0 ;;
 
