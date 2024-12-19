@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.0.13'; }
+version() { echo 'template 1.0.14'; }
 
 # region Help / Usage
 
@@ -178,7 +178,11 @@ while [ $# -gt 0 ]; do
     case $1 in
         --)      shift ;;
         --input) echo "Input: $2";     shift; shift ;;
-        -)       echo "Input: $(cat)"; shift ;;
+        -)       LF='
+'
+                 stdin=; while read -r line; do stdin="$stdin$line${LF}"; done
+                 stdin=${stdin%"${LF}"}
+                 echo "Input: $stdin"; shift ;;
         *)       echo "File: $1";      shift ;;
     esac
 done
