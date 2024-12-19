@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.0.11'; }
+version() { echo 'template 1.0.12'; }
 
 # region Help / Usage
 
@@ -11,16 +11,16 @@ header() { echo >&2 'template is a POSIX compliant shell script template.'; }
 desc() {
     colors NORMAL BOLD RED GREEN YELLOW BLUE MAGENTA CYAN
 
-    echo >&2 "\
+    echo >&2 "
 template demonstrates how to parse options, process arguments and output ${BOLD}${RED}c${GREEN}o${YELLOW}l${BLUE}o${MAGENTA}r${CYAN}s${NORMAL}
-while maintaining POSIX compliance.
-"
+while maintaining POSIX compliance."
 }
 
 help() {
     colors NORMAL BOLD
 
-    echo >&2 "For listing the command options, use '${0##*/} ${BOLD}--help${NORMAL}'."
+    echo >&2 "
+For listing the command options, use '${0##*/} ${BOLD}--help${NORMAL}'."
 }
 
 man() {
@@ -36,14 +36,13 @@ usage() {
 
     echo >&2 "
 ${BOLD}${UNDERLINE}Usage${NORMAL}: ${BOLD}template${NORMAL} [${ITALIC}options${NORMAL}] [${ITALIC}files${NORMAL}]
-                [-h|--help|--version]
-"
+                [-h|--help|--version]"
 }
 
 options() {
     colors NORMAL BOLD ITALIC UNDERLINE
 
-    echo >&2 "\
+    echo >&2 "
 ${BOLD}${UNDERLINE}Options${NORMAL}:
   ${BOLD}--color WHEN, --color=WHEN  ${NORMAL}Specify when to use colored output: ${BOLD:-*}auto${BOLD:-*}${NORMAL}, never or always
                               ${ITALIC}i.e. 'auto' disables colors if the output goes to a pipe${NORMAL}
@@ -54,8 +53,7 @@ ${BOLD}${UNDERLINE}Options${NORMAL}:
   ${BOLD}-i INPUT, --input INPUT,
   ${BOLD}-i=INPUT, --input=INPUT     ${NORMAL}Read from string value of INPUT
   ${BOLD}-h, --help                  ${NORMAL}Display help and exit
-  ${BOLD}-v, --version               ${NORMAL}Display the version number and exit
-"
+  ${BOLD}-v, --version               ${NORMAL}Display the version number and exit"
 }
 
 invalid() {
@@ -129,7 +127,7 @@ parse() {
 }
 
 [ ! -t 0 ] && set -- "$@" -
-[ $# = 0 ] && set -- --help
+[ $# = 0 ] && set -- --usage
 
 boolean=0
 string=
@@ -142,8 +140,9 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
         -b|--boolean)    boolean=1; shift ;;
         -s|--string)     string=$(parse "$1" "$2") || exit $?; [ $# -gt 1 ] && shift; shift ;;
         -s=*|--string=*) string=$(parse "${1%%=*}" "${1#*=}") || exit $?;             shift ;;
-        -\?|-h|--help)   header; usage; desc; options; help; man; exit 0 ;;
-        --version)       version;                                 exit 0 ;;
+        --usage)         header; usage; desc; help; man;    exit 0 ;;
+        -\?|-h|--help)   header; usage; desc; options; man; exit 0 ;;
+        --version)       version;                           exit 0 ;;
 
         -i|--input)     value=$(parse "$1" "$2") || exit $?; [ $# -gt 1 ] && shift
                         set -- "$@" -- --input "$value"; shift ;;
