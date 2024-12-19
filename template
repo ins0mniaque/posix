@@ -2,7 +2,7 @@
 #
 # template - POSIX compliant shell script template
 
-version() { echo 'template 1.1.1'; }
+version() { echo 'template 1.1.2'; }
 
 # region Help / Usage
 
@@ -59,7 +59,7 @@ ${BOLD}${UNDERLINE}Options${NORMAL}:
 invalid() {
     colors NORMAL BOLD RED YELLOW
 
-    echo >&2 "${BOLD}${RED}error:${NORMAL} $2 -- ${YELLOW}$1${NORMAL}"
+    echo >&2 "${BOLD}${RED}error:${NORMAL} ${2:-invalid option} -- ${YELLOW}$1${NORMAL}"
 }
 
 [ -t 1 ] && colorless= || colorless=1
@@ -138,7 +138,7 @@ while [ $# -gt 0 ] && [ "$1" != -- ]; do
         -[!-]?*) opts=${1#??}; opt=${1%"$opts"}; shift
                  case $opt in -[!is]) opts="-$opts" ;; esac
                  set -- "$opt" "$opts" "$@" ;;
-        -*)      invalid "$1" 'invalid option'; usage; help; exit 2 ;;
+        -*)      invalid "$1"; usage; help; exit 2 ;;
         *)       set -- "$@" -- "$1"; shift ;;
     esac
 done
